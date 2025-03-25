@@ -131,28 +131,28 @@
             return array;
         }
 
-        function displayGifts() {
-            const container = document.getElementById('giftContainer');
-            container.innerHTML = ''; // Clear previous gifts
-            const shuffledGifts = shuffle(gifts);
-            shuffledGifts.forEach(gift => {
-                const giftDiv = document.createElement('div');
-                giftDiv.className = 'gift';
-                giftDiv.dataset.id = gift.id;
-                giftDiv.innerHTML = `
-                    <img src="https://st3.depositphotos.com/4060975/17453/v/450/depositphotos_174537006-stock-illustration-gift-box-vector-icon.jpg" alt="Gift ${gift.id}">
-                    <div class="quarter-text">${gift.text}</div>
-                    <button class="link-button" id="linkButton${gift.id}" onclick="window.open('${gift.link}', '_blank')">Get Link for ${gift.text}</button>
-                `;
-                giftDiv.onclick = () => {
-                    if (!isGiftSelected) {
-                        selectGift(gift.id);
-                    }
-                };
-                container.appendChild(giftDiv);
-            });
-            container.style.opacity = 1; // Show the container after gifts are displayed
-        }
+function displayGifts() {
+    const container = document.getElementById('giftContainer');
+    container.innerHTML = ''; // Clear previous gifts
+    const shuffledGifts = shuffle(gifts);
+    shuffledGifts.forEach(gift => {
+        const giftDiv = document.createElement('div');
+        giftDiv.className = 'gift';
+        giftDiv.dataset.id = gift.id;
+        giftDiv.innerHTML = `
+            <img src="https://st3.depositphotos.com/4060975/17453/v/450/depositphotos_174537006-stock-illustration-gift-box-vector-icon.jpg" alt="Gift ${gift.id}">
+            <div class="quarter-text">${gift.text}</div>
+            <button class="link-button" id="linkButton${gift.id}" onclick="window.location.href='${gift.link}'">Get Link for ${gift.text}</button>
+        `;
+        giftDiv.onclick = () => {
+            if (!isGiftSelected) {
+                selectGift(gift.id);
+            }
+        };
+        container.appendChild(giftDiv);
+    });
+    container.style.opacity = 1; // Show the container after gifts are displayed
+}
 
         function selectGift(id) {
             if (selectedGiftId) {
