@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Random Gift Selector</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+        }
+        .gift-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 600px;
+            opacity: 0; /* Start hidden for animation */
+            animation: fadeIn 1s forwards; /* Fade in effect */
+        }
+        .gift {
+            margin: 10px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid white;
+            position: relative;
+        }
+        .gift img {
+            width: 100%;
+            height: 100%;
+            transition: opacity 0.5s ease; /* Smooth transition for image disappearance */
+        }
+        .selected {
+            background-color: green;
+        }
+        .not-selected {
+            background-color: red;
+        }
+        .quarter-text {
+            position: absolute;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.5s ease; /* Smooth transition for text appearance */
+        }
+        .link-button {
+            margin-top: 10px;
+            padding: 5px 10px;
+            background-color: white;
+            color: black;
+            border: none;
+            cursor: pointer;
+            display: none; /* Initially hidden */
+        }
+        .shuffle-button {
+            cursor: pointer;
+            width: 50px;
+            height: 50px;
+            margin-bottom: 20px;
+        }
+        .code-input {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 5px;
+            font-size: 16px;
+            color: black;
+        }
+        .code-button {
+            position: absolute;
+            top: 20px;
+            left: 170px;
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .welcome-message {
+            position: absolute;
+            top: 80px;
+            left: 20px;
+            font-size: 24px;
+            color: yellow;
+            display: none; /* Initially hidden */
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <input type="text" id="codeInput" class="code-input" placeholder="Enter code">
+    <button class="code-button" onclick="enterCode()">Submit</button>
+    <img src="https://static.vecteezy.com/system/resources/previews/048/314/527/non_2x/shuffle-icon-linear-logo-mark-in-black-and-white-vector.jpg" alt="Shuffle" id="shuffleButton" class="shuffle-button" onclick="reshuffleGifts()">
+    <h1>Select a Gift</h1>
+    <div class="gift-container" id="giftContainer"></div>
+    <div class="welcome-message" id="welcomeMessage">Welcome Master</div>
+
+    <script>
+        const gifts = [
+            { id: 1, text: "Quarter 1", link: "https://example.com/quarter1" },
+            { id: 2, text: "Quarter 2", link: "https://example.com/quarter2" },
+            { id: 3, text: "Quarter 3", link: "https://example.com/quarter3" },
+            { id: 4, text: "Quarter 4", link: "https://example.com/quarter4" }
+        ];
+
+        let selectedGiftId = null;
+        let isGiftSelected = false; // Flag to track if a gift has been selected
+
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function displayGifts() {
+            const container = document.getElementById('giftContainer');
+            container.innerHTML = ''; // Clear previous gifts
+            const shuffledGifts = shuffle(gifts);
+            shuffledGifts.forEach(gift => {
+                const giftDiv = document.createElement('div');
+                giftDiv.className = 'gift';
+                giftDiv.dataset.id = gift.id;
+                giftDiv.innerHTML = `
+                    <img src="https://st3.depositphotos.com/4060975/17453/v/450/depositphotos_174537006-stock-illustration-gift-box-vector-icon.jpg" alt="Gift ${gift.id}">
+                    <div class="quarter-text">${gift.text}</div>
+                    <button class="link-button" id="linkButton${gift.id}" onclick="window.open('${gift.link}', '_blank')">Get Link for ${gift.text}</button>
+                `;
+                giftDiv.onclick = () => {
+                    if (!isGiftSelected) {
+                        selectGift(gift.id);
+                    }
+                };
+                container.appendChild(giftDiv);
+            });
+            container.style.opacity = 1; // Show the container after gifts are displayed
+        }
+
+        function selectGift(id) {
+            if (selectedGiftId) {
+                const previousGiftDiv = document.querySelector(`.gift[data-id='${selectedGiftId}']`);
+                previousGiftDiv.classList.remove('selected');
+                previousGiftDiv.classList.add('not-selected'); // Mark previous gift as not selected
+                previousGiftDiv.querySelector('img').style.display = 'none'; // Hide image of previously selected gift
+                previousGiftDiv.querySelector('.quarter-text').style.opacity = 0; // Hide text of previously selected gift
+            }
+            selectedGiftId = id;
+            isGiftSelected = true; // Set flag to true when a gift is selected
+            const selectedGiftDiv = document.querySelector(`.gift[data-id='${id}']`);
+            selectedGiftDiv.classList.add('selected');
+            const linkButton = document.getElementById(`linkButton${id}`);
+            linkButton.style.display = 'block'; // Show the link button for the selected gift
+        }
+
+        function enterCode() {
+            const codeInput = document.getElementById('codeInput').value;
+            if (codeInput === 'admin') {
+                const welcomeMessage = document.getElementById('welcomeMessage');
+                welcomeMessage.style.display = 'block'; // Show welcome message
+                const allGifts = document.querySelectorAll('.gift');
+                allGifts.forEach(gift => {
+                    gift.classList.add('selected'); // Change all gifts to green
+                    gift.querySelector('img').style.display = 'none'; // Hide images
+                    const linkButton = gift.querySelector('.link-button');
+                    linkButton.style.display = 'block'; // Show all link buttons
+                    gift.onclick = null; // Disable click on all gifts
+                });
+            } else {
+                alert('Invalid code. Please try again.'); // Alert for invalid code
+            }
+            // Clear the input after submission
+            document.getElementById('codeInput').value = '';
+        }
+
+        function reshuffleGifts() {
+            displayGifts(); // Call displayGifts to reshuffle and show gifts
+            isGiftSelected = false; // Reset selection flag
+            selectedGiftId = null; // Reset selected gift ID
+        }
+
+        // Initial display of gifts
+        displayGifts();
+    </script>
+</body>
+</html>
